@@ -1,0 +1,494 @@
+@import "tailwindcss";
+/* Larry: card-table tokens.
+   Three layers. Primitives name a colour or size. Semantic tokens name a job (surface, text, border,
+   focus, seat, heat, motion). Component tokens name one reused size. New components read the semantic
+   and component layers; primitives are for this file. The few values TypeScript needs (theme colour,
+   QR, seats, the deal easing) are mirrored in src/lib/tokens.ts, and domain-style.test.ts checks
+   that the mirror matches this file. */
+
+:root {
+  /* ---------- 1. Primitives ---------- */
+
+  /* Neutrals */
+  --table: #f4f1ff; /* the surface cards are laid on */
+  --ink: #14121f; /* card faces and text */
+  --ink-soft: #4a4560; /* secondary text on the table */
+  --ink-500: #7d7896; /* control edges: 4.2:1 on paper, 3.78:1 on table, 4.4:1 on ink */
+  --line: #ddd6f3;
+  --paper: #ffffff;
+  --mat: #221d36; /* the play mat under the hero cards: one step lighter than a card face */
+  --paper-soft: #c9c5da; /* secondary text on ink and the mat: 11:1 on ink, 9.6:1 on mat. Never fade paper text with opacity. */
+  --ink-hover: #2a2640; /* hover on ink buttons */
+  --danger: #b42318; /* errors: 5.91:1 on table, 6.57:1 on paper */
+
+  /* One frame colour per category. Ink text on each: film 6.1, tv 12.8, music 8.5, games 4.4 (titles
+     use --cat-games-tint), books 9.0, sports 6.2, players 7.0, podcasts 7.5, brands 8.1, travel 10.3,
+     people 8.7 (all :1). Frames only: never text on paper (the Frame Rule).
+     Colour-blind distance (OKLab dE x100, worst of protan/deutan/tritan simulation): sports is a
+     blue-green (film/sports 0.7 -> 11.2), brands a warm grey (music/brands 0.6 -> 4.8, brands/people
+     1.7 -> 4.5) and travel a sky blue, away from the books orange (8.5 -> 21.9). Colour still never
+     works alone: every category also shows its own icon or label (DOMAIN_STYLE icons are unique, tested). */
+  --cat-film: #ff5a5f;
+  --cat-tv: #ffd23f;
+  --cat-music: #2ec4b6;
+  --cat-games: #7b61ff;
+  --cat-books: #ff9f1c;
+  --cat-sports: #26a69a;
+  --cat-players: #4aa3ff;
+  --cat-podcasts: #e879f9;
+  --cat-brands: #b8aa9a;
+  --cat-travel: #9cc7e8;
+  --cat-people: #ff8fb8;
+  /* Only Games needs text-safe variants: the violet frame is 4.4:1 under ink text. */
+  --cat-games-ink: #5a3fd6; /* text-safe violet: 6:1 on table, 6.7:1 on paper */
+  --cat-games-tint: #9d8bff; /* lighter violet behind ink text: 6.7:1 */
+
+  /* Old names, kept as aliases for one release. New code uses --cat-*. */
+  --film: var(--cat-film);
+  --tv: var(--cat-tv);
+  --music: var(--cat-music);
+  --games: var(--cat-games);
+  --books: var(--cat-books);
+  --sports: var(--cat-sports);
+  --players: var(--cat-players);
+  --podcast: var(--cat-podcasts);
+  --brand: var(--cat-brands); /* the Brands category, not "the brand colour" */
+  --travel: var(--cat-travel);
+  --people: var(--cat-people);
+  --games-ink: var(--cat-games-ink);
+  --games-tint: var(--cat-games-tint);
+
+  /* ---------- 2. Semantic ---------- */
+
+  /* Surfaces */
+  --surface-page: var(--table);
+  --surface-raised: var(--paper); /* panels, cards, fields */
+  --surface-inverse: var(--ink); /* taste cards, Larry's bubbles, primary buttons */
+  --surface-mat: var(--mat);
+
+  /* Text */
+  --text-primary: var(--ink);
+  --text-secondary: var(--ink-soft); /* 7.9:1 on table */
+  --text-on-inverse: var(--paper);
+  --text-on-inverse-secondary: var(--paper-soft);
+  --text-danger: var(--danger);
+
+  /* Borders. Subtle edges are decoration only (chips are known by their words), so 1.4:1 is fine.
+     Any edge that shows where a control is (a text field, a select) uses --border-control, 3:1 or more. */
+  --border-subtle: rgb(20 18 31 / 0.15); /* replaces ink/10 to ink/30 */
+  --border-subtle-inverse: rgb(255 255 255 / 0.2); /* the same on ink and the mat */
+  --border-control: var(--ink-500); /* fields, selects, and the hover edge of subtle chips */
+  --border-strong: var(--ink);
+  --scrim: rgb(20 18 31 / 0.6); /* behind every dialog */
+
+  /* Focus has its own colour, so a focused Games card is never violet on violet. */
+  --focus-ring: var(--cat-games-ink); /* 6:1 on table, 6.7:1 on paper */
+  --focus-ring-inverse: var(--cat-games-tint); /* on ink and the mat, where games-ink is too dark: 6.7:1 and 5.8:1 */
+  --focus-width: 3px;
+  --focus-offset: 3px;
+
+  /* Seats: one ordered list for every room and pair. Seat colours borrow category
+     frames, so a seat always comes with a second cue too (a name, an initial or its position). */
+  --seat-1: var(--cat-film);
+  --seat-2: var(--cat-music);
+  /* Seat 3 is Players blue, not Games violet: ink initials on violet are only 4.4 to 1. */
+  --seat-3: var(--cat-players);
+  --seat-4: var(--cat-books);
+  --seat-5: var(--cat-tv);
+
+  /* Heat: one lilac-to-ink ramp for "where your people are". Never the only cue: every area also
+     shows its rank and a word. Numerals are ink on heat 1 to 3 and paper on heat 4 and 5. */
+  --heat-1: #ece8fb; /* ink 15.4:1 */
+  --heat-2: var(--paper-soft); /* ink 11:1 */
+  --heat-3: #8f88ab; /* ink 5.5:1 */
+  --heat-4: var(--ink-soft); /* paper 9.1:1 */
+  --heat-5: var(--ink); /* paper 18.5:1 */
+
+  /* Motion: one easing (the deal, registered as --ease-deal in @theme) and three durations.
+     All of it is clamped off under reduced motion (below). */
+  --dur-quick: 180ms; /* morphs, small swaps */
+  --dur-base: 250ms; /* notes and banners in and out */
+  --dur-deal: 600ms; /* a card dealt onto the table */
+
+  /* Layout */
+  --measure: 52ch; /* the one reading width */
+  --dialog-sm: 28rem;
+  --dialog-md: 34rem;
+  --dialog-max-h: 85dvh; /* every Dialog scrolls inside this */
+  --share-max-h: 80dvh; /* the share sheet (QR and link) in the composer slot */
+  --panel-max-h: 70dvh; /* end panels and the Plan Ticket in the composer slot */
+
+  /* ---------- 3. Component ---------- */
+  --button-h: 3.5rem;
+  --button-h-compact: 3rem;
+  --field-h: 3.5rem;
+  --chip-h: 3rem;
+  --border-frame: 3px; /* category frames on posters and bridge cards */
+
+  /* Layout measured at runtime (pair session): fixed composer and sticky header. */
+  --composer-h: 0px;
+  --header-h: 0px;
+}
+
+@theme inline {
+  --color-table: var(--table);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-line: var(--line);
+  --color-paper: var(--paper);
+  --color-paper-soft: var(--paper-soft);
+  --color-mat: var(--mat);
+  --color-ink-hover: var(--ink-hover);
+  --color-danger: var(--danger);
+
+  --color-cat-film: var(--cat-film);
+  --color-cat-tv: var(--cat-tv);
+  --color-cat-music: var(--cat-music);
+  --color-cat-games: var(--cat-games);
+  --color-cat-books: var(--cat-books);
+  --color-cat-sports: var(--cat-sports);
+  --color-cat-players: var(--cat-players);
+  --color-cat-podcasts: var(--cat-podcasts);
+  --color-cat-brands: var(--cat-brands);
+  --color-cat-travel: var(--cat-travel);
+  --color-cat-people: var(--cat-people);
+  --color-cat-games-ink: var(--cat-games-ink);
+  --color-cat-games-tint: var(--cat-games-tint);
+
+  /* Old utility names (bg-film, text-games-ink ...), kept for one release. */
+  --color-film: var(--film);
+  --color-tv: var(--tv);
+  --color-music: var(--music);
+  --color-games: var(--games);
+  --color-books: var(--books);
+  --color-sports: var(--sports);
+  --color-players: var(--players);
+  --color-podcast: var(--podcast);
+  --color-brand: var(--brand);
+  --color-travel: var(--travel);
+  --color-people: var(--people);
+  --color-games-ink: var(--games-ink);
+  --color-games-tint: var(--games-tint);
+
+  /* Semantic colours: bg-surface-raised, text-text-secondary, border-border-control, bg-scrim,
+     outline-focus-ring, bg-seat-1, bg-heat-3 ... */
+  --color-surface-page: var(--surface-page);
+  --color-surface-raised: var(--surface-raised);
+  --color-surface-inverse: var(--surface-inverse);
+  --color-surface-mat: var(--surface-mat);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-on-inverse: var(--text-on-inverse);
+  --color-text-on-inverse-secondary: var(--text-on-inverse-secondary);
+  --color-text-danger: var(--text-danger);
+  --color-border-subtle: var(--border-subtle);
+  --color-border-subtle-inverse: var(--border-subtle-inverse);
+  --color-border-control: var(--border-control);
+  --color-border-strong: var(--border-strong);
+  --color-scrim: var(--scrim);
+  --color-focus-ring: var(--focus-ring);
+  --color-focus-ring-inverse: var(--focus-ring-inverse);
+  --color-seat-1: var(--seat-1);
+  --color-seat-2: var(--seat-2);
+  --color-seat-3: var(--seat-3);
+  --color-seat-4: var(--seat-4);
+  --color-seat-5: var(--seat-5);
+  --color-heat-1: var(--heat-1);
+  --color-heat-2: var(--heat-2);
+  --color-heat-3: var(--heat-3);
+  --color-heat-4: var(--heat-4);
+  --color-heat-5: var(--heat-5);
+
+  /* Widths: max-w-measure, w-dialog-sm, w-dialog-md. */
+  --container-measure: var(--measure);
+  --container-dialog-sm: var(--dialog-sm);
+  --container-dialog-md: var(--dialog-md);
+
+  --font-sans: var(--font-atkinson);
+  --font-display: var(--font-anybody);
+}
+
+@theme {
+  /* Type scale (rem). Every size is a step here; the three title roles are fluid clamps. */
+  --text-caption: 0.85rem; /* poster fallback titles, match pills, small meta */
+  --text-label: 0.95rem; /* chips, quick replies, compact buttons */
+  --text-body: 1.0625rem; /* chat bubbles, buttons, inputs */
+  --text-lead: 1.15rem; /* intro paragraphs on app pages, the session bar */
+  --text-intro: 1.25rem; /* landing intro, mat labels */
+  --text-title-sm: 1.45rem; /* panel headings, logo, md card names */
+  --text-title-md: 2rem; /* lg card names */
+  --text-title-lg: 2.25rem; /* error/empty page headings */
+  --text-step: 3rem; /* the landing's Tap. Swap. Go. */
+  /* Fluid title roles. Display sits inside a size container (the landing hero), so it scales with it. */
+  --text-display: clamp(1.75rem, 9.6cqi, 5.25rem); /* the landing hero line */
+  --text-display--line-height: 0.95;
+  --text-title-page: clamp(2rem, 6vw, 3.25rem); /* one h1 per app page */
+  --text-title-page--line-height: 1;
+  --text-title-session: clamp(1.6rem, 5vw, 2.1rem); /* session and room headings */
+  --text-title-session--line-height: 1.1;
+  --text-code: clamp(1.9rem, 8vw, 2.6rem); /* a room or access code, read across a table */
+  --text-code--line-height: 1;
+  --leading-title: 1;
+
+  /* Radius scale: inner frame < poster tile < badge < dealt bridge card < taste card < panel; pills use rounded-full. */
+  --radius-inner: 0.35rem; /* poster inner frames, the logo mark */
+  --radius-tile: 0.6rem;
+  --radius-badge: 0.85rem; /* title badges */
+  --radius-mini: 1.1rem;
+  --radius-bubble: 1.25rem; /* chat bubbles and the play mat's inner frame */
+  --radius-card: 1.4rem;
+  --radius-panel: 1.75rem;
+
+  /* Shadows: ink-tinted, cast downward like cards lying on a table. */
+  --shadow-button: 0 10px 24px -12px rgb(20 18 31 / 0.7);
+  --shadow-panel: 0 10px 30px -12px rgb(20 18 31 / 0.35);
+  --shadow-mini: 0 14px 30px -18px rgb(20 18 31 / 0.6);
+  --shadow-deal: 0 20px 40px -18px rgb(20 18 31 / 0.6);
+  --shadow-card: 0 24px 48px -20px rgb(20 18 31 / 0.55);
+  /* The fixed composer lifting off the page on focus: shadows above and below. It is an overlay (a fixed bar), so it may cast one. */
+  --shadow-lift: 0 -22px 40px -16px rgb(20 18 31 / 0.7), 0 16px 30px -14px rgb(20 18 31 / 0.55);
+}
+
+/* Static, so var(--ease-deal) always exists, even where no ease-deal utility is used. */
+@theme static {
+  /* The one deal motion (ease-deal). Framer-motion reads the same curve from EASE_DEAL in lib/tokens.ts. */
+  --ease-deal: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html {
+  background: var(--surface-page);
+  /* Keep focused and scrolled-to content clear of the pair session's sticky header and fixed composer. */
+  scroll-padding-top: calc(var(--header-h) + 0.75rem);
+  scroll-padding-bottom: calc(var(--composer-h) + 0.75rem);
+}
+
+body {
+  background: var(--surface-page);
+  color: var(--text-primary);
+  font-family: var(--font-atkinson), system-ui, sans-serif;
+  font-size: var(--text-body);
+  line-height: 1.55;
+}
+
+::selection {
+  background: var(--cat-tv);
+  color: var(--ink);
+}
+
+/* In the base layer, so a component can swap the ring for its own focus style (a field's border,
+   the composer's ring) with a utility. Unlayered, it would beat every utility. An outline is not
+   motion, so the ring stays under reduced motion, and it survives forced-colours mode. */
+@layer base {
+  :focus-visible {
+    outline: var(--focus-width) solid var(--focus-ring);
+    outline-offset: var(--focus-offset);
+  }
+  /* On ink and the mat the dark violet would be 2.7:1, so the ring turns light there. */
+  :where(.bg-ink, .bg-mat, .bg-surface-inverse, .bg-surface-mat, [data-surface="inverse"]) :focus-visible {
+    outline-color: var(--focus-ring-inverse);
+  }
+  /* Headings never leave one word alone on the last line ("Built to be needed / less."), and
+     paragraphs avoid a lone last word too. Both are progressive: older browsers wrap as before. */
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+  p,
+  li {
+    text-wrap: pretty;
+  }
+  /* The skip link moves focus to <main> itself; a ring around the whole page would only confuse. */
+  main[tabindex="-1"]:focus {
+    outline: none;
+  }
+}
+
+input,
+textarea {
+  caret-color: var(--cat-film);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--line) transparent;
+}
+
+.font-display {
+  font-family: var(--font-anybody), var(--font-atkinson), sans-serif;
+  font-stretch: 112%;
+  letter-spacing: -0.02em;
+}
+
+/* Holo foil on a card frame edge. --mx/--my follow the pointer (set in TasteCard). */
+/* The card itself sets position (relative by default) so placement utilities still win. */
+.foil {
+  isolation: isolate;
+}
+.foil::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: var(--border-frame);
+  background: conic-gradient( /* taste-skill-ignore: the holo foil on a card's frame edge, a 3px ring, never a fill */
+    from calc(var(--angle, 0) * 1deg) at var(--mx, 50%) var(--my, 50%),
+    var(--cat-film),
+    var(--cat-tv),
+    var(--cat-music),
+    var(--cat-games),
+    var(--cat-books),
+    var(--cat-film)
+  );
+  -webkit-mask:
+    linear-gradient(var(--ink) 0 0) content-box, /* taste-skill-ignore: a mask that cuts the foil to the frame, not a visible gradient */
+    linear-gradient(var(--ink) 0 0); /* taste-skill-ignore: same mask */
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0.85;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* ---------- Press: a card pressed onto the table ----------
+   Every button, link button, chip, segmented option and switch carries `press`. At rest it sits on a
+   thin hard edge (its thickness on the table). Hover lifts it 1px where a real pointer can hover.
+   Pressed, it sinks by the edge and the edge collapses to nothing; on release it springs back over
+   --dur-quick with the deal curve. The press-down itself is a third of --dur-quick, so it lands under
+   the finger. Busy and disabled (aria-disabled or the attribute) never press and cast no edge.
+   :active holds for as long as the finger or button is down; app/template.tsx adds the passive
+   touchstart listener iOS Safari needs before it shows :active on touch, and touch-action:
+   manipulation drops the double-tap zoom delay. Focus rings are outlines and stay untouched.
+   In the components layer so a caller's utility (shadow-none, translate-*) still wins. */
+@layer components {
+  /* The edge is the card's thickness, not a floating shadow: the user asked for a visible press
+     (Tactile UX, 31 Oct). taste-skill-ignore on these four lines for that reason. */
+  .press {
+    --press-depth: 2px;
+    --press-edge: rgb(20 18 31 / 0.28);
+    box-shadow: 0 var(--press-depth) 0 0 var(--press-edge); /* taste-skill-ignore */
+    transition-property: transform, translate, box-shadow, background-color, border-color, color;
+    transition-duration: var(--dur-quick);
+    transition-timing-function: var(--ease-deal);
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+  /* Paper pills with an ink border: a hard ink edge, like a thick card. */
+  .press-hard {
+    --press-edge: var(--ink);
+  }
+  /* Quiet text buttons and small pills: no edge at rest, a 1px sink when pressed. */
+  .press-flat {
+    --press-depth: 1px;
+    --press-edge: transparent;
+  }
+  /* Chips, options and switches at rest: the subtle edge their border already uses. */
+  .press-soft {
+    --press-edge: var(--border-subtle);
+  }
+  @media (hover: hover) {
+    .press:hover:not(:active, [aria-disabled="true"], :disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 calc(var(--press-depth) + 1px) 0 0 var(--press-edge); /* taste-skill-ignore */
+    }
+  }
+  .press:active:not([aria-disabled="true"], :disabled) {
+    transform: translateY(var(--press-depth));
+    box-shadow: 0 0 0 0 var(--press-edge); /* taste-skill-ignore */
+    transition-duration: calc(var(--dur-quick) / 3);
+  }
+  .press:is([aria-disabled="true"], :disabled) {
+    box-shadow: none; /* taste-skill-ignore */
+    transform: none;
+  }
+}
+
+/* ---------- Page changes: the deal ----------
+   app/template.tsx wraps each top-level route in React's <ViewTransition> (Next runs every navigation
+   in a transition, so no config is needed). The page leaving fades out fast; the page arriving slides
+   up 12px onto the table and settles with the deal curve, 250ms in all. The root snapshot does not
+   crossfade, so the shell never flickers. The overlay lets taps through to the live page. Browsers
+   without the API swap pages instantly. Off entirely under reduced motion (below). */
+::view-transition {
+  pointer-events: none;
+}
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+}
+::view-transition-old(.page-deal) {
+  animation: page-deal-out calc(var(--dur-base) * 0.4) ease-out both;
+}
+::view-transition-new(.page-deal) {
+  animation: page-deal-in var(--dur-base) var(--ease-deal) both;
+}
+::view-transition-group(.page-deal) {
+  animation-duration: var(--dur-base);
+  animation-timing-function: var(--ease-deal);
+}
+@keyframes page-deal-out {
+  to {
+    opacity: 0;
+  }
+}
+@keyframes page-deal-in {
+  from {
+    opacity: 0;
+    translate: 0 12px;
+  }
+}
+
+/* The home table's cards dealt in (components/deal-in.tsx): transform only, from the first paint of the
+   static HTML, so no script runs it. Each card sets its start offset and delay as custom properties. */
+.deal-in {
+  animation: deal-in var(--dur-deal) var(--ease-deal) var(--deal-delay, 0s) both;
+}
+@keyframes deal-in {
+  from {
+    transform: translate(var(--deal-x, 0), var(--deal-y, 0)) rotate(var(--deal-r, 0deg)) scale(var(--deal-s, 1));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+  /* A press still shows (the edge collapses), but nothing moves. */
+  .press,
+  .press:active,
+  .press:hover {
+    transform: none !important;
+  }
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+  /* The dealt cards simply sit in place (the clamp above would still hold them at their start for the delay). */
+  .deal-in {
+    animation: none !important;
+  }
+}
+
+@keyframes typing {
+  0%,
+  100% {
+    opacity: 0.25;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes bar {
+  0%,
+  100% {
+    transform: scaleY(0.35);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}

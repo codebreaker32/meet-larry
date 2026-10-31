@@ -1,0 +1,10 @@
+{
+  "direction": "Trading Card (see DESIGN.md). A short app landing: the hero picture is the play mat, a real fragment of the app (data-ui).",
+  "allow": ["few-pictures", "no-real-pictures", "no-footage", "still-page"],
+  "why": {
+    "few-pictures": "No stock photos of people (PRODUCT.md). The pictures are the Qloo posters on the dealt cards inside the play mat.",
+    "no-real-pictures": "Same as few-pictures.",
+    "no-footage": "A short app landing; no honest clip fits, and a video of people would be stock.",
+    "still-page": "Motion is the card deal on the play mat only, with a reduced-motion fallback. The audience includes anxious and neurodivergent people; a scroll-driven motion layer would work against Easy-Read."
+  }
+}

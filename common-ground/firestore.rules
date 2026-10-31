@@ -1,0 +1,12 @@
+rules_version = '2';
+
+// Larry: no client ever reads or writes Firestore directly.
+// Every read and write goes through the app's server routes, which use firebase-admin
+// (admin access bypasses these rules). Keep this deny-all; see deploy/README.md.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

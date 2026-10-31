@@ -1,0 +1,57 @@
+# Private preview: rendered by caddy-config.sh. Do not edit /etc/caddy/Caddyfile by hand.
+# The admin API is off, so config changes need `systemctl restart caddy`, not reload.
+{
+	admin off
+}
+
+# One set of response headers for normal and error responses alike.
+(security_headers) {
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		X-Robots-Tag "noindex, nofollow"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		# `?` only fills in what Next did not set, so these also cover responses Caddy writes itself.
+		# The CSP lives only in next.config.ts (one place for its dev-only switch).
+		?X-Frame-Options "DENY"
+		?Permissions-Policy "camera=(self), microphone=(self), geolocation=(self), payment=(), usb=(), browsing-topics=()"
+		-Server
+		-X-Powered-By
+		defer
+	}
+}
+
+@@HOST@@ {
+	encode zstd gzip
+	import security_headers
+
+	# Basic-auth login that hands out the preview cookie. `route` keeps the written order, so the
+	# cookie and redirect only happen after basic_auth has passed.
+	handle /__preview {
+		route {
+			basic_auth {
+				@@PREVIEW_USER@@ @@HASH@@
+			}
+			header Set-Cookie "larry_preview=@@COOKIE@@; Path=/; Max-Age=2592000; HttpOnly; Secure; SameSite=Lax"
+			redir * / 302
+		}
+	}
+
+	@guest not header Cookie *larry_preview=@@COOKIE@@*
+	handle @guest {
+		header Content-Type "text/plain; charset=utf-8"
+		respond "Larry is in private preview." 401
+	}
+
+	handle {
+		reverse_proxy 127.0.0.1:3000
+	}
+
+	# Errors (a failed basic-auth login, the app being down) skip the site's handlers above, so they
+	# get the same headers here and a plain-text body.
+	handle_errors {
+		import security_headers
+		header Content-Type "text/plain; charset=utf-8"
+		respond "{err.status_code} {err.status_text}"
+	}
+}

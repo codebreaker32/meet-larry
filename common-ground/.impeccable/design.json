@@ -1,0 +1,186 @@
+{
+ "schemaVersion": 2,
+ "generatedAt": "2026-10-29T21:46:43.994520Z",
+ "title": "Design System: Larry",
+ "extensions": {
+  "colorMeta": {
+   "table": {
+    "role": "neutral",
+    "displayName": "Table"
+   },
+   "ink": {
+    "role": "primary",
+    "displayName": "Card Ink"
+   },
+   "film": {
+    "role": "secondary",
+    "displayName": "Film Coral"
+   },
+   "tv": {
+    "role": "secondary",
+    "displayName": "TV Yellow"
+   },
+   "music": {
+    "role": "secondary",
+    "displayName": "Music Teal"
+   },
+   "games": {
+    "role": "secondary",
+    "displayName": "Games Violet"
+   },
+   "books": {
+    "role": "secondary",
+    "displayName": "Books Orange"
+   },
+   "mat": {
+    "role": "neutral",
+    "displayName": "Play Mat"
+   }
+  },
+  "typographyMeta": {
+   "display": {
+    "displayName": "Display",
+    "purpose": "Landing headline only."
+   },
+   "card-name": {
+    "displayName": "Card name",
+    "purpose": "Names on taste cards and bridge titles."
+   },
+   "body": {
+    "displayName": "Body",
+    "purpose": "All reading text; Atkinson Hyperlegible for low-vision readers."
+   }
+  },
+  "shadows": [
+   {
+    "name": "button",
+    "value": "0 10px 24px -12px rgb(20 18 31 / 0.7)",
+    "purpose": "Primary ink buttons."
+   },
+   {
+    "name": "panel",
+    "value": "0 10px 30px -12px rgb(20 18 31 / 0.35)",
+    "purpose": "Composer and end panel."
+   },
+   {
+    "name": "mini",
+    "value": "0 14px 30px -18px rgb(20 18 31 / 0.6)",
+    "purpose": "Dealt bridge cards."
+   },
+   {
+    "name": "deal",
+    "value": "0 20px 40px -18px rgb(20 18 31 / 0.6)",
+    "purpose": "Hero bridge card on the play mat."
+   },
+   {
+    "name": "card",
+    "value": "0 24px 48px -20px rgb(20 18 31 / 0.55)",
+    "purpose": "Taste cards and the play mat."
+   }
+  ],
+  "motion": [
+   {
+    "name": "deal",
+    "value": "cubic-bezier(0.16, 1, 0.3, 1) 550ms, 80ms stagger",
+    "purpose": "Bridge cards dealt once, then rest. Off under reduced motion."
+   },
+   {
+    "name": "stage-shrink",
+    "value": "cubic-bezier(0.16, 1, 0.3, 1) 600ms",
+    "purpose": "Taste cards shrink after the deal so Larry is in view."
+   }
+  ],
+  "breakpoints": [
+   {
+    "name": "sm",
+    "value": "640px"
+   },
+   {
+    "name": "lg",
+    "value": "1024px",
+    "purpose": "Pair session becomes two columns."
+   },
+   {
+    "name": "short",
+    "value": "max-height: 500px",
+    "purpose": "Header and composer become static."
+   }
+  ]
+ },
+ "components": [
+  {
+   "name": "Primary Button",
+   "kind": "button",
+   "refersTo": "button-primary",
+   "description": "Ink pill for the one main action in a view.",
+   "html": "<button class=\"ds-btn-primary\">Make my taste card</button>",
+   "css": ".ds-btn-primary{background:var(--ink,#14121f);color:var(--paper,#fff);min-height:56px;padding:0 24px;border:0;border-radius:9999px;font:700 1.05rem 'Atkinson Hyperlegible',system-ui,sans-serif;box-shadow:0 10px 24px -12px rgb(20 18 31/.7);transition:transform .15s}.ds-btn-primary:hover{background:var(--ink-hover,#2a2640)}.ds-btn-primary:active{transform:scale(.98)}.ds-btn-primary:focus-visible{outline:3px solid #7b61ff;outline-offset:3px}"
+  },
+  {
+   "name": "Choice Chip",
+   "kind": "chip",
+   "refersTo": "chip-choice",
+   "description": "48px pill with aria-pressed: speaker toggle, quick replies, domain filter.",
+   "html": "<button class=\"ds-chip\" aria-pressed=\"true\">Sam</button><button class=\"ds-chip\" aria-pressed=\"false\">Priya</button>",
+   "css": ".ds-chip{min-height:48px;padding:0 16px;margin-right:8px;border-radius:9999px;border:2px solid rgb(20 18 31/.15);background:#f4f1ff;color:#14121f;font:700 1rem 'Atkinson Hyperlegible',system-ui,sans-serif}.ds-chip[aria-pressed=true]{background:#14121f;color:#fff;border-color:#14121f}.ds-chip:hover{border-color:rgb(20 18 31/.4)}.ds-chip:focus-visible{outline:3px solid #7b61ff;outline-offset:3px}"
+  },
+  {
+   "name": "Bridge Card",
+   "kind": "card",
+   "refersTo": "bridge-card",
+   "description": "A recommendation both tastes point to, with one reason line per person.",
+   "html": "<article class=\"ds-bridge\"><div class=\"ds-bridge-poster\"></div><div><p class=\"ds-bridge-kind\">Film <span>Qloo match 89%</span></p><h3>Coco</h3><p class=\"ds-line a\">Sam likes Minecraft.</p><p class=\"ds-line b\">Priya likes Spirited Away.</p></div></article>",
+   "css": ".ds-bridge{display:flex;gap:12px;width:300px;padding:10px;background:#fff;border:3px solid #ff5a5f;border-radius:1.1rem;box-shadow:0 14px 30px -18px rgb(20 18 31/.6);font-family:'Atkinson Hyperlegible',system-ui,sans-serif;color:#14121f}.ds-bridge-poster{width:70px;height:96px;flex-shrink:0;border-radius:.6rem;border:3px solid #ff5a5f;background:#ff5a5f}.ds-bridge h3{margin:2px 0 6px;font:800 1.05rem Anybody,sans-serif}.ds-bridge-kind{margin:0;font-size:.85rem;font-weight:700;color:#4a4560;display:flex;justify-content:space-between}.ds-bridge-kind span{background:#f4f1ff;color:#14121f;border-radius:9999px;padding:0 8px}.ds-line{margin:2px 0;font-size:.92rem;padding-left:12px;position:relative}.ds-line:before{content:'';position:absolute;left:0;top:5px;width:6px;height:12px;border-radius:9999px;background:#ff5a5f}.ds-line.b:before{background:#2ec4b6}"
+  }
+ ],
+ "narrative": {
+  "northStar": "The Card Table",
+  "overview": "Your taste is a trading card. Scanning someone's card is a trade, and common ground is dealt between the two cards onto a lilac-white table. The world refuses the default chatbot shell and the cream-serif wellness look, and the trading-card metaphor stops at what is earned outside: Glory, titles, stages and counts exist only for verified real-world things (The Earned Outside Rule), never rarity, loot or a currency.",
+  "keyCharacteristics": [
+   "Ink card faces with thick frames in a domain colour, and real Qloo poster art in the windows.",
+   "A heavy, slightly expanded display face for names and headings only; a low-vision reading face for everything else.",
+   "One orchestrated motion, the deal, then everything rests.",
+   "Every action has a tap-only path, with targets of 48px or more and at least 8px between them."
+  ],
+  "rules": [
+   {
+    "name": "The Frame Rule",
+    "body": "Domain colours are frames, discs and markers, never text on paper.",
+    "section": "colors"
+   },
+   {
+    "name": "The No Opacity Text Rule",
+    "body": "Quiet or disabled states never fade text.",
+    "section": "colors"
+   },
+   {
+    "name": "The Display Is For Names Rule",
+    "body": "Anybody sets names and headings only.",
+    "section": "typography"
+   },
+   {
+    "name": "The Easy-Read Rule",
+    "body": "No symbols as joiners in copy; full short sentences.",
+    "section": "typography"
+   },
+   {
+    "name": "The Foil Edge Rule",
+    "body": "Holo foil appears only on a card's frame edge.",
+    "section": "elevation"
+   }
+  ],
+  "dos": [
+   "Do follow The Earned Outside Rule. Glory, titles, stages, quests and counts exist only for real things done in the real world: verified check-ins, times met, plans that happened. Nothing is earned in chat, by opening the app or by spending money. Nothing ever goes down, breaks, expires or is lost. There is no rarity, no random reward, no loot and no leaderboard of people's Glory. The card world stays a card world: a title is a card you earned at a place, not a currency.",
+   "Do deal: bridges fly out once with exponential ease-out and then rest.",
+   "Do put real Qloo poster art in every window.",
+   "Do label made-up people and characters as made up, and Larry as an AI.",
+   "Do keep every target at least 48px with at least 8px between targets."
+  ],
+  "donts": [
+   "Don't add rarity, loot, random rewards, metal colours, a currency, or anything earned from chat, app opens, screen time or spending.",
+   "Don't use gradient text, glass or blur, eyebrow labels, emoji as icons, or bounce easing.",
+   "Don't set coloured text on paper for names or links.",
+   "Don't fade text to show a state."
+  ]
+ }
+}

@@ -1,0 +1,16 @@
+# Secrets: any env file variant (backups like .env.bak, .env.prod), keys and cloud credentials.
+.env
+.env*
+!.env.example
+!**/.env.example
+*.pem
+*.key
+*-firebase-adminsdk-*.json
+*service-account*.json
+credentials*.json
+*.tgz
+run-logs/
+
+# Unused AI hero art: never committed (only brand/larry-avatar.png is used)
+brand/hero.png
+private/
